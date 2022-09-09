@@ -1,25 +1,31 @@
+// const input = [
+// 	"import {AsyncLoader} from 'addaris-core/components/core/AsyncLoader/AsyncLoader.vue';",
+// 	"import {configure} from 'vee-validate';",
+// 	"import {defineAsyncComponent} from '#imports';",
+// 	"import {initRules} from '@/helpers/validationRules';",
+// 	"import {ManagementLoader} from 'addaris-core/components/management/ManagementLoader/ManagementLoader.vue';",
+// 	"import {NCard, NModal} from 'naive-ui';",
+// 	"import {useLayout, useRuntimeConfig, useNuxtApp} from '#imports';",
+// 	"import {useUser, useCart, useTranslation, useConfig, useManagement} from '@addaris/composables';",
+// 	"import mdiVue from 'mdi-vue/v3';",
+// 	"import VueGtag from 'vue-gtag-next';",
+// 	"import VueLazyLoad from 'vue3-lazyload';",
+// 	"import vueScrollTo from 'vue-scrollto';",
+// ];
+
 const input = [
 	"import {AsyncLoader} from 'addaris-core/components/core/AsyncLoader/AsyncLoader.vue';",
 	"import {configure} from 'vee-validate';",
 	"import {defineAsyncComponent} from '#imports';",
 	"import {initRules} from '@/helpers/validationRules';",
-	"import {ManagementLoader} from 'addaris-core/components/management/ManagementLoader/ManagementLoader.vue';",
-	"import {NCard, NModal} from 'naive-ui';",
-	"import {useLayout, useRuntimeConfig, useNuxtApp} from '#imports';",
-	"import {useUser, useCart, useTranslation, useConfig, useManagement} from '@addaris/composables';",
-	"import mdiVue from 'mdi-vue/v3';",
-	"import VueGtag from 'vue-gtag-next';",
-	"import VueLazyLoad from 'vue3-lazyload';",
-	"import vueScrollTo from 'vue-scrollto';",
+	"import {",
+		"mdiPhone,",
+		"mdiPlus,",
+		"mdiScaleBalance,",
+		"mdiScaleUnbalanced,",
+		"mdiTimerSand,",
+	"} from '@mdi/js';",
 ];
-
-// const input = [
-// 'background: #f3f3f3;',
-// 'border-radius: 5px 5px 0 0;',
-// 'border: 1px solid #e4e4e4;',
-// 'cursor: pointer;',
-// 'flex: 1 1 auto;',
-// ];
 
 const superSort = function (lineA, lineB) {
 	lineA = lineA.toString();
@@ -73,20 +79,50 @@ const superSort = function (lineA, lineB) {
 };
 
 sortLines = function (lines) {
-	for (const key in lines) {
-		const line = lines[key];
+	const indexesToDelete = [];
 
-		if (line.includes('import {')) {
-			const
-				rawImportedModules = line.match(/\{(.*)\}/)[1];
+	for (let index = 0; index <= lines.length; index++) {
+		let line = lines[index];
 
-			let importedModules = rawImportedModules.split(', ');
+		if (line === 'import {') {
+			let
+				indexInherit = 0,
+				lineInherit = '';
 
-			if (importedModules.length > 1) {
-				importedModules = importedModules.sort(superSort).join(', ');
-				lines[key] = lines[key].replace(rawImportedModules, importedModules);
+			while (lineInherit !== undefined && !lineInherit.includes('}')) {
+				lineInherit = lines[index + indexInherit];
+				lines[index] = lines[index] + lineInherit + ' ';
+
+				indexInherit++;
+				indexesToDelete.push(index + indexInherit);
 			}
 		}
+
+		if (lines[index]) {
+			lines[index] = lines[index].replace(', } ', '} ');
+			lines[index] = lines[index].replace('import {import { ', 'import {');
+		}
+
+		indexesToDelete.forEach(indexToDelete => {
+			delete lines[indexToDelete];
+		});
+
+		// console.log(lines);
+
+		// // console.log({line: lines[index]});
+
+		// if (line.includes('import {')) {
+		// 	const
+		// 		rawImportedModules = line.match(/\{(.*)\}/)[1];
+
+		// 	let importedModules = rawImportedModules.split(', ');
+
+		// 	if (importedModules.length > 1) {
+		// 		importedModules = importedModules.sort(superSort).join(', ');
+		// 		lines[index] = lines[index].replace(rawImportedModules, importedModules);
+		// 	}
+		// }
+
 	}
 
 	lines.sort(superSort);
@@ -94,4 +130,5 @@ sortLines = function (lines) {
 	return lines;
 }
 
+// sortLines(input)
 console.log(sortLines(input));
