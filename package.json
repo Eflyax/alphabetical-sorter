@@ -1,8 +1,8 @@
 {
-  "name": "alphabetical-sorter",
-  "displayName": "Alphabetical Sorter",
+  "name": "alphabetical-sorter-e",
+  "displayName": "Alphabetical Sorter (E)",
   "description": "Multi line or single line alphabetical sorter.",
-  "version": "2.0.1",
+  "version": "1.0.0",
   "icon": "images/icon.png",
   "publisher": "ue",
   "license": "MIT",
@@ -38,7 +38,8 @@
   },
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
+    "test": "node ./node_modules/vscode/bin/test",
+		"ext": "vsce package && code --install-extension alphabetical-sorter-e-1.0.0.vsix"
   },
   "devDependencies": {
     "typescript": "^2.6.1",
