@@ -1,4 +1,6 @@
-const vscode = require('vscode');
+const
+	vscode = require('vscode'),
+	sortLines = require('./sorter');
 
 function activate(context) {
 	let disposable = vscode.commands.registerCommand('extension.sortIt', () => {
@@ -27,9 +29,7 @@ function activate(context) {
 			}
 		}
 
-		lines.sort(function(a, b) {
-			return a.toLowerCase().localeCompare(b.toLowerCase());
-		});
+		lines = sortLines(lines);
 
 		editor.edit(editBuilder => {
 			isSingleLine
