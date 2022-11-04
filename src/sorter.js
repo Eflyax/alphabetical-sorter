@@ -1,6 +1,6 @@
 const superSort = function (lineA, lineB) {
-	lineA = lineA.toString();
-	lineB = lineB.toString();
+	lineA = lineA.toString().toLowerCase();
+	lineB = lineB.toString().toLowerCase();
 
 	for (
 		var index = 0, maxLength = Math.max(lineA.length, lineB.length);
@@ -14,43 +14,35 @@ const superSort = function (lineA, lineB) {
 
 	const
 		charOne = lineA.charAt(index),
-		charTwo = lineB.charAt(index),
-		charOneLowerCase = charOne.toLowerCase(),
-		charTwoLowerCase = charTwo.toLowerCase();
+		charTwo = lineB.charAt(index);
 
-	function checkExceptions(valueA, valueB) {
-		if (valueA === '-') {
-			return 1;
-		}
-
-		if (valueB === '{') {
-			return 1;
-		}
-
+	if (charOne === '{') {
 		return -1;
 	}
-
-	if (charOneLowerCase < charTwoLowerCase) {
-		return checkExceptions(charOneLowerCase, charTwoLowerCase);
-	}
-	else if (charOneLowerCase > charTwoLowerCase) {
+	else if (charOne === '-') {
 		return 1;
 	}
+	else if (charTwo === '{') {
+		return 1;
+	}
+	else if (charOne < charTwo) {
+		return -1;
+	}
 	else {
-		if (charOne < charTwo) {
-			return -1;
-		}
-		else if (charOne > charTwo) {
-			return 1;
-		}
-		else {
-			return 0;
-		}
+		return 1;
 	}
 };
 
 function sortLines(lines) {
-	const indexesToDelete = [];
+	const
+		indexesToDelete = [],
+		importTypes = lines.filter(line => {
+			return line.includes('type {')
+		});
+
+	importTypes.sort(superSort);
+
+	lines = lines.filter(line => !line.includes('type {'));
 
 	for (let index = 0; index <= lines.length; index++) {
 		let line = lines[index];
@@ -60,17 +52,21 @@ function sortLines(lines) {
 				indexInherit = 0,
 				lineInherit = '';
 
-			while (lineInherit !== undefined && !lineInherit.includes('}')) {
+			while (lineInherit !== undefined && !lineInherit.includes('} from')) {
 				lineInherit = lines[index + indexInherit];
 				lines[index] = lines[index] + lineInherit + ' ';
 				indexInherit++;
-				indexesToDelete.push(index + indexInherit);
+
+				if (!lines[index + indexInherit].includes('import {')) {
+					indexesToDelete.push(index + indexInherit);
+				}
 			}
 		}
 
 		if (lines[index]) {
 			lines[index] = lines[index].replace(', } ', '} ');
 			lines[index] = lines[index].replace('import {import { ', 'import {');
+			lines[index] = lines[index].replace(' } from', '} from');
 		}
 
 		indexesToDelete.forEach(indexToDelete => {
@@ -93,6 +89,8 @@ function sortLines(lines) {
 	}
 
 	lines.sort(superSort);
+
+	lines = lines.concat(importTypes);
 
 	return lines.filter(line => {
 		return line;
