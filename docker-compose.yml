@@ -1,0 +1,10 @@
+version: "3.7"
+
+services:
+  node:
+    container_name: "alphabetical-sorter"
+    image: "node:16.15.1-buster"
+    working_dir: '/var/www/html/'
+    volumes:
+      - ./:/var/www/html/
+    stdin_open: true
